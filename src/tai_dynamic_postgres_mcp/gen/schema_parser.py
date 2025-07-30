@@ -1,6 +1,18 @@
 import re
 from typing import List, Tuple
 
+CONSTRAINT_KEYWORDS = {
+    'NOT', 'NULL',  # NOT NULL, NULL
+    'DEFAULT',  # DEFAULT value
+    'PRIMARY',  # PRIMARY KEY
+    'UNIQUE',  # UNIQUE constraint
+    'CHECK',  # CHECK (...)
+    'REFERENCES',  # REFERENCES table(col)
+    'GENERATED',  # GENERATED ALWAYS AS IDENTITY
+    'COLLATE',  # COLLATE something
+    'CONSTRAINT'  # CONSTRAINT name ...
+}
+
 _MODEL_TEMPLATE = '''
 class {model_name}(BaseModel):
 {fields}
@@ -89,12 +101,23 @@ def parse_schema(schema: str):
             continue
 
         if current_table and '--' not in line and line:
-            column_match = re.match(r'(\w+)\s+([\w\s()]+)(.*)', line)
-            if column_match:
-                col_name, col_type, constraints = column_match.groups()
-                nullable = 'NOT NULL' not in constraints.upper()
-                py_type = sql_type_to_python_type(col_type, nullable)
-                tables[current_table].append((col_name, py_type))
+            line = line.rstrip(',')  # remove trailing comma
+
+            parts = line.split()
+            col_name = parts[0]
+
+            type_parts = []
+            for part in parts[1:]:
+                if part.upper() not in CONSTRAINT_KEYWORDS:
+                    type_parts.append(part)
+
+            col_type = ' '.join(type_parts)
+            constraints = ' '.join(parts[1 + len(type_parts):])
+
+            nullable = 'NOT NULL' not in constraints.upper()
+            py_type = sql_type_to_python_type(col_type, nullable)
+            tables[current_table].append((col_name, py_type))
+
     return tables
 
 
