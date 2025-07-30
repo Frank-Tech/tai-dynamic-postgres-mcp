@@ -12,7 +12,7 @@ async def executemany_tmpl(
         columns: List[str],
         values: List[Tuple],
         raise_on_conflict: bool = True
-) -> List[str]:
+) -> List[int]:
     if not values:
         return []
 

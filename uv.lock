@@ -890,7 +890,7 @@ wheels = [
 
 [[package]]
 name = "tai-dynamic-postgres-mcp"
-version = "0.1.4"
+version = "0.1.5"
 source = { editable = "." }
 dependencies = [
     { name = "async-lru" },

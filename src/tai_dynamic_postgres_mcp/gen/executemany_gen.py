@@ -16,7 +16,7 @@ from tai_dynamic_postgres_mcp.tools.helpers import executemany_tmpl
 
 _TOOL_TEMPLATE = '''
 @mcp_app.tool
-async def {func_name}(params: List[{model_name}], raise_on_conflict: bool = True) -> List[str]:
+async def {func_name}(params: List[{model_name}], raise_on_conflict: bool = True) -> List[int]:
     """
     Inserts multiple rows into the `{table}` table.
 
