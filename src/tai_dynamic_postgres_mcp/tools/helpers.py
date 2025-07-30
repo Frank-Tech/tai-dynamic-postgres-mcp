@@ -11,7 +11,7 @@ async def executemany_tmpl(
         table: str,
         columns: List[str],
         values: List[Tuple],
-        raise_on_conflicts: bool = True
+        raise_on_conflict: bool = True
 ) -> List[str]:
     if not values:
         return []
@@ -22,7 +22,7 @@ async def executemany_tmpl(
         sql.SQL('({})').format(sql.SQL(', ').join(sql.Placeholder() for _ in range(6))) for _ in values
     )
 
-    conflict_clause = sql.SQL("") if raise_on_conflicts else sql.SQL("ON CONFLICT DO NOTHING")
+    conflict_clause = sql.SQL("") if raise_on_conflict else sql.SQL("ON CONFLICT DO NOTHING")
 
     query = sql.SQL(_EXECUTEMANY_SQL_TEMPLATE).format(
         table=sql.Identifier(*table.split('.')),

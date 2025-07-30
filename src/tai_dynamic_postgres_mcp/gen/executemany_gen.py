@@ -10,21 +10,16 @@ _OUTPUT_FILEPATH = Path(tools.__file__).resolve().parent / "executemany_tools.py
 
 _IMPORTS = """# This file is auto-generated. Do not edit manually.
 
-from typing import *
+from typing import Optional, List
 from pydantic import BaseModel
 from tai_dynamic_postgres_mcp.core.app import mcp_app
 from tai_dynamic_postgres_mcp.tools.helpers import executemany_tmpl
 
 """
 
-_MODEL_TEMPLATE = '''
-class {model_name}(BaseModel):
-{fields}
-'''
-
 _TOOL_TEMPLATE = '''
 @mcp_app.tool
-async def {func_name}(params: List[{model_name}], raise_on_conflicts: bool = True) -> List[str]:
+async def {func_name}(params: List[{model_name}], raise_on_conflict: bool = True) -> List[str]:
     """
     Inserts multiple rows into the `{table}` table.
 
@@ -37,7 +32,7 @@ async def {func_name}(params: List[{model_name}], raise_on_conflicts: bool = Tru
 
     values = [({args}) for row in params or []]
 
-    return await executemany_tmpl("{table}", {col_list}, values, raise_on_conflicts)
+    return await executemany_tmpl("{table}", {col_list}, values, raise_on_conflict)
 '''
 
 
