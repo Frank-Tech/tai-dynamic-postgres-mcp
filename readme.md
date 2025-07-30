@@ -39,10 +39,10 @@ Example: Run directly from Git using uvx
       "args": [
         "--from",
         "git+https://github.com/Frank-Tech/tai_dynamic_postgres_mcp.git",
-        "tai-postgres-mcp", 
-        "--skip-insert-column",
+        "tai-postgres-mcp",
+        "--ignore-insert-column",
         "id",
-        "--skip-insert-column",
+        "--ignore-insert-column",
         "date_created"
       ],
       "env": {
@@ -50,7 +50,7 @@ Example: Run directly from Git using uvx
         "PG_PORT": "5432",
         "PG_DB": "dbname",
         "PG_USER": "username",
-        "PG_PASSWORD": "password",       
+        "PG_PASSWORD": "password"
       }
     }
   }
