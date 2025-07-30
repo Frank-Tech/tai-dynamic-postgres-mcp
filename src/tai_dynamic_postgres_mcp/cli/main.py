@@ -1,10 +1,14 @@
 import asyncio
+import sys
 
 from tai_dynamic_postgres_mcp.cli.args_parser import build_parser
 from tai_dynamic_postgres_mcp.core.app import mcp_app
 from tai_dynamic_postgres_mcp.database.connection import close_connection_pool
 from tai_dynamic_postgres_mcp.database.ddl import generate_schema_ddl
 from tai_dynamic_postgres_mcp.gen.gen import load_dynamic_tools
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 async def runner():
