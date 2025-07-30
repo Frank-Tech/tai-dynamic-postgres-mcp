@@ -13,7 +13,7 @@ _IMPORTS = """# This file is auto-generated. Do not edit manually.
 from typing import *
 from pydantic import BaseModel
 from tai_dynamic_postgres_mcp.core.app import mcp_app
-from tai_dynamic_postgres_mcp.database.connection import cursor
+from tai_dynamic_postgres_mcp.tools.helpers import executemany_tmpl
 
 """
 
@@ -24,7 +24,7 @@ class {model_name}(BaseModel):
 
 _TOOL_TEMPLATE = '''
 @mcp_app.tool
-async def {func_name}(params: List[{model_name}]) -> List[str]:
+async def {func_name}(params: List[{model_name}], raise_on_conflicts: bool = True) -> List[str]:
     """
     Inserts multiple rows into the `{table}` table.
 
@@ -34,27 +34,18 @@ async def {func_name}(params: List[{model_name}]) -> List[str]:
     Returns:
         List of inserted row IDs from the `{table}` table.
     """
-    
-    query = """
-    INSERT INTO {table} (
-        {col_names}
-    ) VALUES ({placeholders})
-    RETURNING id
-    """
-    
-    values = [
-        ({args})
-        for row in params
-    ]
-    
-    async with cursor() as cur:
-        result = await cur.executemany(query, values)
-        return [row[0] for row in result]
+
+    values = [({args}) for row in params or []]
+
+    return await executemany_tmpl("{table}", {col_list}, values, raise_on_conflicts)
 '''
 
 
-def generate_function_code(table: str, columns: List[tuple], ignore_insert_columns: Optional[List[str]] = None) -> \
-        tuple[str, str]:
+def generate_function_code(
+        table: str,
+        columns: List[tuple],
+        ignore_insert_columns: Optional[List[str]] = None
+) -> tuple[str, str]:
     func_name = f"{_FUNC_PREFIX}_{table.replace('.', '_')}"
 
     ignore_insert_columns = ignore_insert_columns or []
@@ -62,19 +53,19 @@ def generate_function_code(table: str, columns: List[tuple], ignore_insert_colum
 
     model_name, model_code = sql_columns_to_pydantic_model(_FUNC_PREFIX, table, insert_columns)
 
-    col_names = ',\n\t\t'.join([col for col, _ in insert_columns])
     doc_params = ', '.join([col for col, _ in insert_columns])
-    placeholders = ', '.join(['%s'] * len(insert_columns))
     args = ', '.join([f"row.{col}" for col, _ in insert_columns])
+    col_list = [col for col, _ in insert_columns]
+    num_cols = len(insert_columns)
 
     tool_code = _TOOL_TEMPLATE.format(
         func_name=func_name,
         model_name=model_name,
         table=table,
         doc_params=doc_params,
-        col_names=col_names,
-        placeholders=placeholders,
-        args=args
+        args=args,
+        col_list=repr(col_list),
+        num_cols=num_cols
     )
 
     return model_code, tool_code
