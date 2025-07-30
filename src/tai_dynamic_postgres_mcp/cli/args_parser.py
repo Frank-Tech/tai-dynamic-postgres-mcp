@@ -7,6 +7,12 @@ def build_parser() -> ArgumentParser:
     )
 
     parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite the generated tool file if it already exists."
+    )
+
+    parser.add_argument(
         "--ignore-insert-column",
         action="append",
         default=["id", "date_created", "date_updated"],
