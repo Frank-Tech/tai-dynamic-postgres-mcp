@@ -29,7 +29,7 @@ PG_POOL_MAX_LIFETIME=600
 
 ## Usage
 
-Example: Run directly from Git using uvx
+Basic Example: Run directly from Git using uvx
 
 ```json
 {
@@ -39,11 +39,7 @@ Example: Run directly from Git using uvx
       "args": [
         "--from",
         "git+https://github.com/Frank-Tech/tai_dynamic_postgres_mcp.git",
-        "tai-postgres-mcp",
-        "--ignore-insert-column",
-        "id",
-        "--ignore-insert-column",
-        "date_created"
+        "tai-postgres-mcp"
       ],
       "env": {
         "PG_HOST": "localhost",
@@ -57,8 +53,3 @@ Example: Run directly from Git using uvx
 }
 
 ```
-
-## Limitations
-
-- Currently only supports generation of `executemany`-style insert tools.
-- No caching is implemented yet for the generated schema or models.

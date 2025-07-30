@@ -16,7 +16,21 @@ def build_parser() -> ArgumentParser:
         "--ignore-insert-column",
         action="append",
         default=["id", "date_created", "date_updated"],
-        help="Columns to skip when generating insert functions. Can be specified multiple times."
+        help="Columns to ignore when generating insert functions. Can be specified multiple times."
+    )
+
+    parser.add_argument(
+        "--ignore-select-column",
+        action="append",
+        default=[],
+        help="Columns to ignore when generating select functions. Can be specified multiple times."
+    )
+
+    parser.add_argument(
+        "--ignore-update-column",
+        action="append",
+        default=["id", "date_created"],
+        help="Columns to ignore when generating update functions. Can be specified multiple times."
     )
 
     parser.add_argument(

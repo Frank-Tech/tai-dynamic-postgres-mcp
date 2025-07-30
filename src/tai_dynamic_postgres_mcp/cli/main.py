@@ -14,7 +14,12 @@ async def runner():
     parser = build_parser()
     args = parser.parse_args()
 
-    await load_dynamic_tools(args.overwrite, args.ignore_insert_column)
+    await load_dynamic_tools(
+        args.overwrite,
+        args.ignore_insert_column,
+        args.ignore_select_column,
+        args.ignore_update_column
+    )
 
     if args.transport == "stdio":
         await mcp_app.run_async(transport=args.transport)

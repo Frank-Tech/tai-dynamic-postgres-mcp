@@ -4,10 +4,10 @@ from psycopg import sql
 
 from tai_dynamic_postgres_mcp.database.connection import cursor
 
-_EXECUTEMANY_SQL_TEMPLATE = "INSERT INTO {table} ({columns}) VALUES {values} {conflict_clause} RETURNING id"
+_INSERT_SQL_TEMPLATE = "INSERT INTO {table} ({columns}) VALUES {values} {conflict_clause} RETURNING id"
 
 
-async def executemany_tmpl(
+async def insert_tmpl(
         table: str,
         columns: List[str],
         values: List[Tuple],
@@ -24,7 +24,7 @@ async def executemany_tmpl(
 
     conflict_clause = sql.SQL("") if raise_on_conflict else sql.SQL("ON CONFLICT DO NOTHING")
 
-    query = sql.SQL(_EXECUTEMANY_SQL_TEMPLATE).format(
+    query = sql.SQL(_INSERT_SQL_TEMPLATE).format(
         table=sql.Identifier(*table.split('.')),
         columns=sql.SQL(', ').join(sql.Identifier(col) for col in columns),
         values=values_placeholders,

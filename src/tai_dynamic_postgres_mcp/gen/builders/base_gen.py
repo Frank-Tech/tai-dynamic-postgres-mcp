@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import Optional, List
 
 from tai_dynamic_postgres_mcp import tools
-from tai_dynamic_postgres_mcp.gen.schema_parser import parse_schema
+from tai_dynamic_postgres_mcp.gen.schema.schema_parser import parse_schema
 
 _OUTPUT_DIR = Path(tools.__file__).resolve().parent
 
-_TOOLS_SUFFIX = "_tools"
+TOOLS_SUFFIX = "tools"
 
 
 class BaseGen(ABC):
@@ -34,7 +34,7 @@ class BaseGen(ABC):
 
     @property
     def output_path(self) -> Path:
-        return _OUTPUT_DIR / f'{self.prefix}_{_TOOLS_SUFFIX}.py'
+        return _OUTPUT_DIR / f'{self.prefix}_{TOOLS_SUFFIX}.py'
 
     @property
     def is_exists(self) -> bool:
@@ -54,7 +54,13 @@ class BaseGen(ABC):
         return chunks
 
     def generate_file(self, schema: str):
+        if self.is_exists:
+            os.chmod(self.output_path, 0o644)
+
         with open(self.output_path, "w") as f:
             for chunk in self.generate_tools(schema):
-                f.write(chunk)
+                # Some generators (like DeleteGen) don't generate model code,
+                # so `chunk` can be an empty string. This avoids writing blank lines.
+                if chunk:
+                    f.write(chunk)
         os.chmod(self.output_path, 0o444)
