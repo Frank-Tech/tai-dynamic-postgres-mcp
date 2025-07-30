@@ -7,7 +7,7 @@ from tai_dynamic_postgres_mcp.database.ddl import generate_schema_ddl
 from tai_dynamic_postgres_mcp.gen.gen import load_dynamic_tools
 
 
-async def main():
+async def runner():
     parser = build_parser()
     args = parser.parse_args()
 
@@ -22,5 +22,9 @@ async def main():
     await close_connection_pool()
 
 
+def main():
+    return asyncio.run(runner())
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
