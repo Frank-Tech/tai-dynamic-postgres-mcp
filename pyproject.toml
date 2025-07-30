@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tai_dynamic_postgres_mcp"
+version = "0.1.0"
+description = "dynamic queries MCP PostgreSQL Server"
+authors = [{ name = "Your Name", email = "daniel@cain-technologies.com" }]
+readme = "readme.md"
+requires-python = ">=3.10"
+dependencies = [
+    "psycopg[binary]~=3.2.9",
+    "psycopg[pool]~=3.2.6",
+    "python-dotenv~=1.1.1",
+    "pydantic-settings~=2.10.1",
+    "pydantic~=2.11.7",
+    "fastmcp~=2.10.6",
+    "async-lru~=2.0.5"
+]
+
+[project.entry-points.console_scripts]
+tai-postgres-mcp = "tai_dynamic_postgres_mcp.cli.main:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
