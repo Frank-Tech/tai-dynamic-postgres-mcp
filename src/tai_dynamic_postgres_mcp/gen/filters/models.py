@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
-from pydantic import BaseModel, RootModel
-from pydantic import Field
+from pydantic import BaseModel, RootModel, Field, model_validator
 
 
 class FilterOp(BaseModel):
@@ -26,12 +25,21 @@ class FilterOp(BaseModel):
     is_null: Optional[bool] = None  # IS NULL / IS NOT NULL
 
 
-class BaseWhereFilter(RootModel[Dict[str, FilterOp]]):
-    pass
-
-
-class WhereFilter(BaseModel):
+class LogicalFilter(BaseModel):
     AND: Optional[List[WhereFilter]] = None
     OR: Optional[List[WhereFilter]] = None
     NOT: Optional[WhereFilter] = None
-    base: Optional[BaseWhereFilter] = None
+
+
+class WhereFilter(RootModel[Union[LogicalFilter, Dict[str, FilterOp]]]):
+    @model_validator(mode='after')
+    def check_reserved_keys(self):
+        if isinstance(self.root, dict):
+            reserved = {'AND', 'OR', 'NOT'}
+            intersecting = reserved.intersection(self.root.keys())
+            if intersecting:
+                raise ValueError(f"Cannot use reserved keys {intersecting} as field names in direct filters")
+        return self
+
+
+LogicalFilter.model_rebuild()
