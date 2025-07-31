@@ -1,4 +1,4 @@
-# tai_dynamic_postgres_mcp
+# tai-dynamic-postgres-mcp
 
 This project is designed to dynamically generate PostgreSQL-aware tools for use in FastMCP-based agent systems.
 
