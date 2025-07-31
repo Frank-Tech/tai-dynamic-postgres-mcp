@@ -57,7 +57,7 @@ class BaseGen(ABC):
         if self.is_exists:
             os.chmod(self.output_path, 0o644)
 
-        with open(self.output_path, "w") as f:
+        with self.output_path.open("w") as f:
             for chunk in self.generate_tools(schema):
                 # Some generators (like DeleteGen) don't generate model code,
                 # so `chunk` can be an empty string. This avoids writing blank lines.
