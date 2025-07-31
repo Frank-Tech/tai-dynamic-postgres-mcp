@@ -32,6 +32,12 @@ class LogicalFilter(BaseModel):
 
 
 class WhereFilter(RootModel[Union[LogicalFilter, Dict[str, FilterOp]]]):
+    model_config = {
+        "json_schema_extra": {
+            "description": "Logical filters (AND/OR/NOT) or direct field filters (e.g., { 'field': { 'eq': value, 'in': [values], ... } })"
+        }
+    }
+
     @model_validator(mode='after')
     def check_reserved_keys(self):
         if isinstance(self.root, dict):
