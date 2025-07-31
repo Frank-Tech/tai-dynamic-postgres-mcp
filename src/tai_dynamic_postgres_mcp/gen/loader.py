@@ -28,12 +28,10 @@ async def load_dynamic_tools(
     ]
 
     to_generate = gen_list if overwrite else [gen for gen in gen_list if not gen.is_exists]
-    if not to_generate:
-        return
-
-    schema = await generate_schema_ddl()
-    for gen in to_generate:
-        gen.generate_file(schema)
+    if to_generate:
+        schema = await generate_schema_ddl()
+        for gen in to_generate:
+            gen.generate_file(schema)
 
     for loader, module_name, is_pkg in pkgutil.walk_packages(tools.__path__, tools.__name__ + "."):
         try:
