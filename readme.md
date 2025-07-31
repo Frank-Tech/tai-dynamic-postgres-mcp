@@ -38,7 +38,7 @@ Basic Example: Run directly from Git using uvx
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/Frank-Tech/tai_dynamic_postgres_mcp.git",
+        "git+https://github.com/Frank-Tech/tai-dynamic-postgres-mcp.git",
         "tai-postgres-mcp"
       ],
       "env": {
