@@ -70,7 +70,20 @@ async def get_async_connection() -> AsyncConnection:
 
 
 @asynccontextmanager
-async def cursor(row_factory: AsyncRowFactory[Any] | None = None) -> AsyncCursor:
+async def cursor(
+        name: str = "",
+        *,
+        binary: bool = False,
+        row_factory: AsyncRowFactory[Any] | None = None,
+        scrollable: bool | None = None,
+        withhold: bool = False,
+) -> AsyncCursor:
     async with get_async_connection() as conn:
-        async with conn.cursor(row_factory=row_factory) as cur:
+        async with conn.cursor(
+                name=name,
+                binary=binary,
+                row_factory=row_factory,
+                scrollable=scrollable,
+                withhold=withhold,
+        ) as cur:
             yield cur
