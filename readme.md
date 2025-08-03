@@ -1,14 +1,14 @@
 # tai-dynamic-postgres-mcp
 
-This project is designed to dynamically generate PostgreSQL-aware tools for use in FastMCP-based agent systems.
+##### Schema-Based Generator for PostgreSQL DML Tools in FastMCP Agent Systems
 
 ## What It Does
 
 - Connects to your PostgreSQL instance and introspects the schema.
-- Dynamically generates FastMCP-compatible tools for PostgreSQL DML operations.
-- Automatically creates Pydantic-based models to define the structure of inputs for each tool.
-- Exposes those tools directly through FastMCP so they are usable by agents and workflows.
-- Supports configurable column skipping for insert operations (e.g., auto-generated `id`, timestamps, etc.).
+- Generates one FastMCP-compatible tool per DML operation (insert, select, update, delete) for each table.
+- Creates a dedicated Pydantic model for each tool's input, based on the table’s structure.
+- Supports column exclusion for the relevant tools (e.g., `id`, `created_at`, etc.).
+- Limits agent access to only generated tools, preventing unrestricted SQL or schema changes.
 
 ## Environment Variables
 
@@ -51,5 +51,4 @@ Basic Example: Run directly from Git using uvx
     }
   }
 }
-
 ```
