@@ -8,6 +8,7 @@ from psycopg.rows import AsyncRowFactory
 from psycopg_pool import AsyncConnectionPool
 
 from tai_dynamic_postgres_mcp.config.settings import pg_settings
+from tai_dynamic_postgres_mcp.database.helpers import register_temporal_types_as_strings
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,7 @@ async def get_async_connection() -> AsyncConnection:
     try:
         pool = await get_connection_pool()
         conn = await pool.getconn()
+        await register_temporal_types_as_strings(conn)
         yield conn
     except Exception as e:
         logger.error(e)
