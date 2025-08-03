@@ -1,8 +1,10 @@
 import logging
 from contextlib import asynccontextmanager
+from typing import Any
 
 from async_lru import alru_cache
 from psycopg import AsyncConnection, AsyncCursor
+from psycopg.rows import AsyncRowFactory
 from psycopg_pool import AsyncConnectionPool
 
 from tai_dynamic_postgres_mcp.config.settings import pg_settings
@@ -66,7 +68,7 @@ async def get_async_connection() -> AsyncConnection:
 
 
 @asynccontextmanager
-async def cursor() -> AsyncCursor:
+async def cursor(row_factory: AsyncRowFactory[Any] | None = None) -> AsyncCursor:
     async with get_async_connection() as conn:
-        async with conn.cursor() as cur:
+        async with conn.cursor(row_factory=row_factory) as cur:
             yield cur

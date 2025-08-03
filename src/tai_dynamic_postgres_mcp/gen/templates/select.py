@@ -1,6 +1,7 @@
 from typing import List, Optional, Type
 
 from psycopg import sql
+from psycopg.rows import dict_row
 
 from tai_dynamic_postgres_mcp.database.connection import cursor
 from tai_dynamic_postgres_mcp.gen.filters.builder import build_where_clause
@@ -23,7 +24,7 @@ async def select_tmpl(
     if where_clause:
         query += sql.SQL(" WHERE ") + sql.SQL(where_clause)
 
-    async with cursor() as cur:
+    async with cursor(row_factory=dict_row) as cur:
         await cur.execute(query, params)
         rows = await cur.fetchall()
         await cur.connection.commit()
