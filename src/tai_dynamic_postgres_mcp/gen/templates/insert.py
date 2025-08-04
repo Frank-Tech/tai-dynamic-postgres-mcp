@@ -19,7 +19,7 @@ async def insert_tmpl(
     flat_values = [item for row in values for item in row]
 
     values_placeholders = sql.SQL(', ').join(
-        sql.SQL('({})').format(sql.SQL(', ').join(sql.Placeholder() for _ in range(6))) for _ in values
+        sql.SQL('({})').format(sql.SQL(', ').join(sql.Placeholder() for _ in columns)) for _ in values
     )
 
     conflict_clause = sql.SQL("") if raise_on_conflict else sql.SQL("ON CONFLICT DO NOTHING")
