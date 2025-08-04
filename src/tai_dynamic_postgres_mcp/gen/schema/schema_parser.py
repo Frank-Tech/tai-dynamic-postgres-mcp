@@ -68,6 +68,23 @@ SQL_TO_PYTHON = {
     'macaddr': 'str',
     'interval': 'str',
 
+    # PostgreSQL array types
+    'integer[]': 'List[int]',
+    'int[]': 'List[int]',
+    'bigint[]': 'List[int]',
+    'smallint[]': 'List[int]',
+    'text[]': 'List[str]',
+    'varchar[]': 'List[str]',
+    'character varying[]': 'List[str]',
+    'boolean[]': 'List[bool]',
+    'bool[]': 'List[bool]',
+    'uuid[]': 'List[str]',
+    'numeric[]': 'List[float]',
+    'real[]': 'List[float]',
+    'double precision[]': 'List[float]',
+    'json[]': 'List[dict]',
+    'jsonb[]': 'List[dict]',
+
     # Catch-all fallback
     'any': 'Any',
 }
