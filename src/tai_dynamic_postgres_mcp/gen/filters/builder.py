@@ -1,32 +1,34 @@
 from typing import Optional, List, Any
 
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter, LogicalFilter
 
 
 def build_where_clause(op: Optional[WhereFilter]) -> tuple[str, List[Any]]:
     if not op:
         return "", []
 
+    inner = op.root
     clauses = []
     params = []
 
-    if op.AND:
-        sub_clauses = [build_where_clause(sub) for sub in op.AND]
-        sql_parts, values = zip(*sub_clauses)
-        clauses.append(f"({' AND '.join(sql_parts)})")
-        params.extend(sum(values, []))
-    if op.OR:
-        sub_clauses = [build_where_clause(sub) for sub in op.OR]
-        sql_parts, values = zip(*sub_clauses)
-        clauses.append(f"({' OR '.join(sql_parts)})")
-        params.extend(sum(values, []))
-    if op.NOT:
-        sql, vals = build_where_clause(op.NOT)
-        clauses.append(f"(NOT ({sql}))")
-        params.extend(vals)
-
-    if op.__root__:
-        for field, condition in op.__root__.items():
+    if isinstance(inner, LogicalFilter):
+        if inner.AND:
+            sub_clauses = [build_where_clause(sub) for sub in inner.AND]
+            sql_parts, values = zip(*sub_clauses)
+            clauses.append(f"({' AND '.join([part for part in sql_parts if part])})")
+            params.extend([v for subvals in values for v in subvals])
+        if inner.OR:
+            sub_clauses = [build_where_clause(sub) for sub in inner.OR]
+            sql_parts, values = zip(*sub_clauses)
+            clauses.append(f"({' OR '.join([part for part in sql_parts if part])})")
+            params.extend([v for subvals in values for v in subvals])
+        if inner.NOT:
+            sql, vals = build_where_clause(inner.NOT)
+            if sql:
+                clauses.append(f"(NOT ({sql}))")
+            params.extend(vals)
+    elif isinstance(inner, dict):
+        for field, condition in inner.items():
             for operator, value in condition.model_dump(exclude_none=True, by_alias=True).items():
                 match operator:
                     case "eq":
@@ -73,5 +75,5 @@ def build_where_clause(op: Optional[WhereFilter]) -> tuple[str, List[Any]]:
                         clauses.append(f"{field} BETWEEN %s AND %s")
                         params.extend(value)
 
-    where_clause = " AND ".join(clauses) if clauses else ""
+    where_clause = " AND ".join([clause for clause in clauses if clause]) if clauses else ""
     return where_clause, params
