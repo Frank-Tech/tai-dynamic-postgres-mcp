@@ -7,7 +7,7 @@ from tai_dynamic_postgres_mcp import tools
 from tai_dynamic_postgres_mcp.gen.builders.base_gen import BaseGen, TOOLS_SUFFIX
 from tai_dynamic_postgres_mcp.gen.builders.delete_gen import DeleteGen
 from tai_dynamic_postgres_mcp.gen.builders.insert_gen import InsertGen
-from tai_dynamic_postgres_mcp.gen.builders.join_gen import JoinGen
+from tai_dynamic_postgres_mcp.gen.builders.select_joined_gen import SelectJoinedGen
 from tai_dynamic_postgres_mcp.gen.builders.select_gen import SelectGen
 from tai_dynamic_postgres_mcp.gen.builders.update_gen import UpdateGen
 from tai_dynamic_postgres_mcp.gen.schema.introspect import generate_schema_ddl
@@ -24,7 +24,7 @@ async def load_dynamic_tools(
         select_joined: Optional[List[List[str]]] = None,
 ):
     gen_list: List[BaseGen] = [
-        JoinGen(select_joined, ignore_select_joined_columns),
+        SelectJoinedGen(select_joined, ignore_select_joined_columns),
         InsertGen(ignore_insert_columns),
         SelectGen(ignore_select_columns),
         UpdateGen(ignore_update_columns),

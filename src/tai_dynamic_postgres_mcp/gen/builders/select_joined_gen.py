@@ -32,7 +32,7 @@ async def {func_name}(where: Optional[WhereFilter] = None) -> List[{model_name}]
 '''
 
 
-class JoinGen(BaseGen):
+class SelectJoinedGen(BaseGen):
     def __init__(self, join_groups: List[List[str]], ignore_columns: Optional[List[str]] = None):
         super().__init__(_FUNC_PREFIX, _IMPORTS, _TOOL_TEMPLATE, ignore_columns)
         self.join_groups = join_groups
