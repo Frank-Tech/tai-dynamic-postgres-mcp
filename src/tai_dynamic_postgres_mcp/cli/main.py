@@ -20,7 +20,7 @@ async def runner():
         ignore_select_columns=args.ignore_select_column,
         ignore_update_columns=args.ignore_update_column,
         ignore_select_joined_columns=args.ignore_select_joined_column,
-        select_joined=[group.split(',') for group in args.select_joined]
+        select_joined=[group.split(',') for group in args.select_joined or []]
     )
 
     if args.transport == "stdio":
