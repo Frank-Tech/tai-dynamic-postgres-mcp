@@ -185,9 +185,16 @@ def parse_schema(schema: str) -> Tuple[Dict[str, List[Tuple[str, str]]], List[Tu
 def sql_columns_to_pydantic_model(prefix: str, table: str, columns: List[Tuple[str, str]]) -> tuple[str, str]:
     name = f"{prefix}_{table}_row"
     model_name = ''.join(word.capitalize() for word in name.replace('.', '_').split('_'))
-    fields = "\n".join([f"    {col}: {typ}" for col, typ in columns])
-    return model_name, '''
+
+    def format_field(col: str, typ: str) -> str:
+        default = " = None" if "Optional[" in typ or "None" in typ else ""
+        return f"    {col}: {typ}{default}"
+
+    fields = "\n".join([format_field(col, typ) for col, typ in columns])
+
+    model_code = f'''
 class {model_name}(BaseModel):
 {fields}
+'''
 
-'''.format(model_name=model_name, fields=fields)
+    return model_name, model_code
