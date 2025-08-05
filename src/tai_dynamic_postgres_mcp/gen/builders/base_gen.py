@@ -44,7 +44,7 @@ class BaseGen(ABC):
         return f"{self.prefix}_{table.replace('.', '_')}"
 
     def generate_tools(self, schema: str) -> List[str]:
-        tables = parse_schema(schema)
+        tables, fks = parse_schema(schema)
         chunks = [self.imports]
         for table, columns in tables.items():
             model_code, tool_code = self.generate_tool(table, columns)

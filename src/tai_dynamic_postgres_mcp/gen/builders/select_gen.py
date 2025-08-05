@@ -33,8 +33,8 @@ async def {func_name}(where: Optional[WhereFilter] = None) -> List[{model_name}]
 
 
 class SelectGen(BaseGen):
-    def __init__(self, ignore_select_columns: Optional[List[str]] = None):
-        super().__init__(_FUNC_PREFIX, _IMPORTS, _TOOL_TEMPLATE, ignore_select_columns)
+    def __init__(self, ignore_columns: Optional[List[str]] = None):
+        super().__init__(_FUNC_PREFIX, _IMPORTS, _TOOL_TEMPLATE, ignore_columns)
 
     def generate_tool(
             self,

@@ -15,10 +15,12 @@ async def runner():
     args = parser.parse_args()
 
     await load_dynamic_tools(
-        args.overwrite,
-        args.ignore_insert_column,
-        args.ignore_select_column,
-        args.ignore_update_column
+        overwrite=args.overwrite,
+        ignore_insert_columns=args.ignore_insert_column,
+        ignore_select_columns=args.ignore_select_column,
+        ignore_update_columns=args.ignore_update_column,
+        ignore_select_joined_columns=args.ignore_select_joined_column,
+        select_joined=[group.split(',') for group in args.select_joined]
     )
 
     if args.transport == "stdio":

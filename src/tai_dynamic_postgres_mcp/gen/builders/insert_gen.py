@@ -36,8 +36,8 @@ async def {func_name}(params: List[{model_name}], raise_on_conflict: bool = True
 
 
 class InsertGen(BaseGen):
-    def __init__(self, ignore_insert_columns: Optional[List[str]] = None):
-        super().__init__(_FUNC_PREFIX, _IMPORTS, _TOOL_TEMPLATE, ignore_insert_columns)
+    def __init__(self, ignore_columns: Optional[List[str]] = None):
+        super().__init__(_FUNC_PREFIX, _IMPORTS, _TOOL_TEMPLATE, ignore_columns)
 
     def generate_tool(
             self,

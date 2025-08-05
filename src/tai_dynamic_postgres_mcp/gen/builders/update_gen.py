@@ -33,8 +33,8 @@ async def {func_name}(data: {model_name}, where: Optional[WhereFilter] = None) -
 
 
 class UpdateGen(BaseGen):
-    def __init__(self, ignore_update_columns: Optional[List[str]] = None):
-        super().__init__(_FUNC_PREFIX, _IMPORTS, _TOOL_TEMPLATE, ignore_update_columns)
+    def __init__(self, ignore_columns: Optional[List[str]] = None):
+        super().__init__(_FUNC_PREFIX, _IMPORTS, _TOOL_TEMPLATE, ignore_columns)
 
     def generate_tool(
             self,
