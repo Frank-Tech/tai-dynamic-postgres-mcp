@@ -90,6 +90,7 @@ class JoinGen(BaseGen):
         column_map = {}
         select_parts = []
         model_columns = []
+        base_table = group[0]
         for t in group:
             if t not in tables:
                 raise ValueError(f"Table {t} not found in schema.")
@@ -101,11 +102,15 @@ class JoinGen(BaseGen):
                 qualified = f"{t}.{col}"
                 column_map[alias] = qualified
                 select_parts.append(f"{qualified} AS {alias}")
+                if t != base_table and not typ.startswith('Optional['):
+                    typ = f"Optional[{typ}]"
                 model_columns.append((alias, typ))
 
         select_clause = "SELECT " + ", ".join(select_parts)
 
-        joined_group = "_".join([g.split('.')[-1] for g in group])
+        schema_name = group[0].split('.')[0]
+        table_names = "_".join([g.split('.')[-1] for g in group])
+        joined_group = f"{schema_name}_{table_names}"
         model_name, model_code = sql_columns_to_pydantic_model(self.prefix, joined_group, model_columns)
 
         tool_code = self.template.format(
