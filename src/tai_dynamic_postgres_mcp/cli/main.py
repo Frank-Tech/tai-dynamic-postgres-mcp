@@ -24,7 +24,7 @@ async def runner():
     )
 
     # ping pg
-    with get_async_connection():
+    async with get_async_connection():
         pass
 
     if args.transport == "stdio":
