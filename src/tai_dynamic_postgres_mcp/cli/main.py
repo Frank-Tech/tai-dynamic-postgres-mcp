@@ -3,7 +3,7 @@ import sys
 
 from tai_dynamic_postgres_mcp.cli.args_parser import build_parser
 from tai_dynamic_postgres_mcp.core.app import mcp_app
-from tai_dynamic_postgres_mcp.database.connection import close_connection_pool
+from tai_dynamic_postgres_mcp.database.connection import close_connection_pool, get_async_connection
 from tai_dynamic_postgres_mcp.gen.loader import load_dynamic_tools
 
 if sys.platform == "win32":
@@ -22,6 +22,10 @@ async def runner():
         ignore_select_joined_columns=args.ignore_select_joined_column,
         select_joined=[group.split(',') for group in args.select_joined or []]
     )
+
+    # ping pg
+    with get_async_connection():
+        pass
 
     if args.transport == "stdio":
         await mcp_app.run_async(transport=args.transport)
