@@ -2,7 +2,6 @@ import asyncio
 import sys
 
 from tai_dynamic_postgres_mcp.cli.args_parser import build_parser
-from tai_dynamic_postgres_mcp.core.app import mcp_app
 from tai_dynamic_postgres_mcp.database.connection import close_connection_pool, get_async_connection
 from tai_dynamic_postgres_mcp.gen.loader import load_dynamic_tools
 
@@ -27,16 +26,23 @@ async def runner():
     async with get_async_connection():
         pass
 
-    if args.transport == "stdio":
-        await mcp_app.run_async(transport=args.transport)
-    else:
-        await mcp_app.run_async(transport=args.transport, host=args.host, port=args.port)
-
-    await close_connection_pool()
+    try:
+        if transport == "stdio":
+            await mcp.run_async(transport=transport)
+        else:
+            await mcp.run_async(transport=transport, host=mcp_host, port=mcp_port)
+    except KeyboardInterrupt as e:
+        logging.info("KeyboardInterrupt")
+        return 120
+    except Exception as e:
+        logging.error(str(e))
+        return 1
+    finally:
+        await close_connection_pool()
 
 
 def main():
-    return asyncio.run(runner())
+    sys.exit(asyncio.run(runner()))
 
 
 if __name__ == "__main__":
