@@ -39,7 +39,7 @@ async def runner():
             await mcp_app.run_async(transport=args.transport, host=args.host, port=args.port)
     except KeyboardInterrupt as e:
         logging.info("KeyboardInterrupt")
-        return 120
+        return 130
     except Exception as e:
         logging.error(str(e))
         return 1
