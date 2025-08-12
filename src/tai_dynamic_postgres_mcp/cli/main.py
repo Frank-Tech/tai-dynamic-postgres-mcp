@@ -44,7 +44,12 @@ async def runner():
         logging.error(str(e))
         return 1
     finally:
-        await close_connection_pool()
+        try:
+            await close_connection_pool()
+        except asyncio.exceptions.CancelledError:
+            logging.debug("CancelledError during connection pool closure, ignoring...")
+        except Exception as e:
+            logging.error(f"Error during connection pool closure: {str(e)}")
 
 
 def main():
