@@ -1,7 +1,10 @@
 import asyncio
+import logging
 import sys
+from argparse import ArgumentTypeError
 
 from tai_dynamic_postgres_mcp.cli.args_parser import build_parser
+from tai_dynamic_postgres_mcp.core.app import mcp_app
 from tai_dynamic_postgres_mcp.database.connection import close_connection_pool, get_async_connection
 from tai_dynamic_postgres_mcp.gen.loader import load_dynamic_tools
 
@@ -12,6 +15,9 @@ if sys.platform == "win32":
 async def runner():
     parser = build_parser()
     args = parser.parse_args()
+    if args.transport == "stdio":
+        if args.host != "127.0.0.1" or args.port != 8000:
+            raise ArgumentTypeError("Host and port should not be set when using 'stdio' transport.")
 
     await load_dynamic_tools(
         overwrite=args.overwrite,
@@ -27,10 +33,10 @@ async def runner():
         pass
 
     try:
-        if transport == "stdio":
-            await mcp.run_async(transport=transport)
+        if args.transport == "stdio":
+            await mcp_app.run_async(transport=args.transport)
         else:
-            await mcp.run_async(transport=transport, host=mcp_host, port=mcp_port)
+            await mcp_app.run_async(transport=args.transport, host=args.host, port=args.port)
     except KeyboardInterrupt as e:
         logging.info("KeyboardInterrupt")
         return 120
