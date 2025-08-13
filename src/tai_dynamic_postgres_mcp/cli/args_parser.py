@@ -13,7 +13,7 @@ def build_parser() -> ArgumentParser:
     )
 
     parser.add_argument(
-        '--select_joined',
+        '--select-joined',
         action='append',
         help="Join groups for select, e.g., --select_joined=table1,table2,table3"
     )
