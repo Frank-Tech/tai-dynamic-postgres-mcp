@@ -1,8 +1,14 @@
 from __future__ import annotations
 
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional, List, Dict, Any, Union, Literal
 
 from pydantic import BaseModel, RootModel, Field, model_validator
+
+
+class KnnOp(BaseModel):
+    query: List[float]
+    distance: Literal['l2', 'inner_product', 'cosine'] = 'l2'
+    threshold: float
 
 
 class FilterOp(BaseModel):
@@ -23,6 +29,8 @@ class FilterOp(BaseModel):
 
     between: Optional[List[Any]] = None  # BETWEEN [x, y]
     is_null: Optional[bool] = None  # IS NULL / IS NOT NULL
+
+    knn: Optional[KnnOp] = None  # Vector KNN operator
 
 
 class LogicalFilter(BaseModel):

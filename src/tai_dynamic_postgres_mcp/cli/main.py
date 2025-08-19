@@ -1,9 +1,9 @@
 import asyncio
 import logging
 import sys
-from argparse import ArgumentTypeError
 
-from tai_dynamic_postgres_mcp.cli.args_parser import build_parser
+import click
+
 from tai_dynamic_postgres_mcp.core.app import mcp_app
 from tai_dynamic_postgres_mcp.database.connection import close_connection_pool, get_async_connection
 from tai_dynamic_postgres_mcp.gen.loader import load_dynamic_tools
@@ -12,20 +12,31 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
-async def runner():
-    parser = build_parser()
-    args = parser.parse_args()
-    if args.transport == "stdio":
-        if args.host != "127.0.0.1" or args.port != 8000:
-            raise ArgumentTypeError("Host and port should not be set when using 'stdio' transport.")
+async def runner(
+        overwrite: bool,
+        select_joined: tuple[str],
+        ignore_insert_column: tuple[str],
+        ignore_select_column: tuple[str],
+        ignore_update_column: tuple[str],
+        ignore_select_joined_column: tuple[str],
+        transport: str,
+        host: str,
+        port: int,
+):
+    # Validate transport-related arguments
+    if transport == "stdio":
+        if host != "127.0.0.1" or port != 8000:
+            raise click.BadParameter(
+                "Host and port should not be set when using 'stdio' transport."
+            )
 
     await load_dynamic_tools(
-        overwrite=args.overwrite,
-        ignore_insert_columns=args.ignore_insert_column,
-        ignore_select_columns=args.ignore_select_column,
-        ignore_update_columns=args.ignore_update_column,
-        ignore_select_joined_columns=args.ignore_select_joined_column,
-        select_joined=[group.split(',') for group in args.select_joined or []]
+        overwrite=overwrite,
+        ignore_insert_columns=ignore_insert_column,
+        ignore_select_columns=ignore_select_column,
+        ignore_update_columns=ignore_update_column,
+        ignore_select_joined_columns=ignore_select_joined_column,
+        select_joined=[group.split(",") for group in select_joined or []],
     )
 
     # ping pg
@@ -33,11 +44,11 @@ async def runner():
         pass
 
     try:
-        if args.transport == "stdio":
-            await mcp_app.run_async(transport=args.transport)
+        if transport == "stdio":
+            await mcp_app.run_async(transport=transport)
         else:
-            await mcp_app.run_async(transport=args.transport, host=args.host, port=args.port)
-    except KeyboardInterrupt as e:
+            await mcp_app.run_async(transport=transport, host=host, port=port)
+    except KeyboardInterrupt:
         logging.info("KeyboardInterrupt")
         return 130
     except Exception as e:
@@ -52,8 +63,87 @@ async def runner():
             logging.error(f"Error during connection pool closure: {str(e)}")
 
 
-def main():
-    sys.exit(asyncio.run(runner()))
+@click.command()
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    help="Overwrite the generated tool file if it already exists.",
+)
+@click.option(
+    "--select-joined",
+    multiple=True,
+    help="Join groups for select, e.g., --select-joined table1,table2,table3",
+)
+@click.option(
+    "--ignore-insert-column",
+    multiple=True,
+    default=["id", "date_created", "date_updated"],
+    show_default=True,
+    help="Columns to ignore when generating insert functions.",
+)
+@click.option(
+    "--ignore-select-column",
+    multiple=True,
+    default=[],
+    help="Columns to ignore when generating select functions.",
+)
+@click.option(
+    "--ignore-update-column",
+    multiple=True,
+    default=["id", "date_created"],
+    show_default=True,
+    help="Columns to ignore when generating update functions.",
+)
+@click.option(
+    "--ignore-select-joined-column",
+    multiple=True,
+    default=[],
+    help="Columns to ignore when generating select_joined functions.",
+)
+@click.option(
+    "-t",
+    "--transport",
+    type=click.Choice(["stdio", "http", "sse", "streamable-http"]),
+    default="stdio",
+    show_default=True,
+    help="Transport mechanism for the MCP server.",
+)
+@click.option(
+    "--host",
+    default="127.0.0.1",
+    show_default=True,
+    help="Host to bind the server to (used only with HTTP/SSE transports).",
+)
+@click.option(
+    "--port",
+    default=8000,
+    show_default=True,
+    type=int,
+    help="Port number to bind the server to (used only with HTTP/SSE transports).",
+)
+def main(
+        overwrite,
+        select_joined,
+        ignore_insert_column,
+        ignore_select_column,
+        ignore_update_column,
+        ignore_select_joined_column,
+        transport,
+        host,
+        port,
+):
+    """Generate dynamic insert MCP tools based on a given PostgreSQL schema."""
+    sys.exit(asyncio.run(runner(
+        overwrite,
+        select_joined,
+        ignore_insert_column,
+        ignore_select_column,
+        ignore_update_column,
+        ignore_select_joined_column,
+        transport,
+        host,
+        port,
+    )))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,12 @@
 version = 1
 revision = 2
 requires-python = ">=3.10"
+resolution-markers = [
+    "python_full_version >= '3.13'",
+    "python_full_version == '3.12.*'",
+    "python_full_version == '3.11.*'",
+    "python_full_version < '3.11'",
+]
 
 [[package]]
 name = "annotated-types"
@@ -890,10 +896,11 @@ wheels = [
 
 [[package]]
 name = "tai-dynamic-postgres-mcp"
-version = "0.3.9"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "async-lru" },
+    { name = "click" },
     { name = "fastmcp" },
     { name = "psycopg", extra = ["binary", "pool"] },
     { name = "pydantic" },
@@ -904,6 +911,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "async-lru", specifier = "~=2.0.5" },
+    { name = "click", specifier = "~=8.2.1" },
     { name = "fastmcp", specifier = "~=2.10.6" },
     { name = "psycopg", extras = ["binary"], specifier = "~=3.2.9" },
     { name = "psycopg", extras = ["pool"], specifier = "~=3.2.6" },

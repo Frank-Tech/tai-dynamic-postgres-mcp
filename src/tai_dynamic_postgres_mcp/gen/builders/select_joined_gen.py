@@ -12,23 +12,26 @@ from pydantic import BaseModel
 from tai_dynamic_postgres_mcp.core.app import mcp_app
 from tai_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
 from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
 
 """
 
 _TOOL_TEMPLATE = '''
 @mcp_app.tool
-async def {func_name}(where: Optional[WhereFilter] = None) -> List[{model_name}]:
+async def {func_name}(where: Optional[WhereFilter] = None, order_by: Optional[List[OrderByItem]] = None, limit: Optional[int] = None) -> List[{model_name}]:
     """
     Selects rows from joined tables: {tables_str}.
 
     Parameters:
-        where: Optional filters to apply using `WhereFilter` on aliased columns (table_column).
+        where: Optional filters to apply using `WhereFilter` on aliased columns (table_column). For vector similarity (KNN), include in field filters like {{"aliased_vector": {{"knn": {{"query": [floats], "distance": "l2", "threshold": 0.5, "direction": "ASC"}}}}}}. If `threshold` is set, adds a distance filter; always implies ordering by distance (use 'direction' for ASC/DESC). Combine with AND/OR as needed.
+        order_by: Optional list of fields and directions to order by (using aliased columns; appended after any implied KNN orders).
+        limit: Optional maximum number of rows to return.
 
     Returns:
         List of `{model_name}` objects from the joined tables.
     """
 
-    return await select_joined_tmpl("{select_clause}", "{from_clause}", where, {column_map_repr}, model={model_name})
+    return await select_joined_tmpl("{select_clause}", "{from_clause}", where, {column_map_repr}, order_by, limit, {model_name})
 '''
 
 

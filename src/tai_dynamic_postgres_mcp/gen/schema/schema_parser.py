@@ -62,6 +62,9 @@ SQL_TO_PYTHON = {
     'macaddr': 'str',
     'interval': 'str',
 
+    # Vector
+    'vector': 'List[float]',
+
     # PostgreSQL array types
     'integer[]': 'List[int]',
     'int[]': 'List[int]',
@@ -78,6 +81,7 @@ SQL_TO_PYTHON = {
     'double precision[]': 'List[float]',
     'json[]': 'List[dict]',
     'jsonb[]': 'List[dict]',
+    'vector[]': 'List[List[float]]',
 
     # Catch-all fallback
     'any': 'Any',
