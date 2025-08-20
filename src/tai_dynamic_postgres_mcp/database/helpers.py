@@ -1,3 +1,4 @@
+import warnings
 from typing import List
 
 from psycopg.adapt import Loader
@@ -35,7 +36,10 @@ class VectorLoader(Loader):
 
 async def register_vector_as_list(conn):
     tinfo = await TypeInfo.fetch(conn, 'vector')
-    conn.adapters.register_loader(tinfo.oid, VectorLoader)
+    if not tinfo:
+        warnings.warn("Postgres type 'vector' not found. Did you enable the pgvector extension?", RuntimeWarning)
+    else:
+        conn.adapters.register_loader(tinfo.oid, VectorLoader)
 
 
 async def register_types_loaders(conn):
