@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tai_dynamic_postgres_mcp"
+name = "tai-dynamic-postgres-mcp"
 version = "0.4.1"
 description = "dynamic PostgreSQL DML MCP Server"
 authors = [{ name = "Your Name", email = "daniel@cain-technologies.com" }]
