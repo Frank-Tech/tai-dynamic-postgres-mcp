@@ -14,6 +14,7 @@ if sys.platform == "win32":
 
 async def runner(
         overwrite: bool,
+        readonly: bool,
         select_joined: tuple[str],
         ignore_insert_column: tuple[str],
         ignore_select_column: tuple[str],
@@ -32,6 +33,7 @@ async def runner(
 
     await load_dynamic_tools(
         overwrite=overwrite,
+        readonly=readonly,
         ignore_insert_columns=ignore_insert_column,
         ignore_select_columns=ignore_select_column,
         ignore_update_columns=ignore_update_column,
@@ -68,6 +70,11 @@ async def runner(
     "--overwrite",
     is_flag=True,
     help="Overwrite the generated tool file if it already exists.",
+)
+@click.option(
+    "--readonly",
+    is_flag=True,
+    help="Generate only read-only tools (e.g., select functions). No insert or update tools will be generated.",
 )
 @click.option(
     "--select-joined",
@@ -123,6 +130,7 @@ async def runner(
 )
 def main(
         overwrite,
+        readonly,
         select_joined,
         ignore_insert_column,
         ignore_select_column,
@@ -135,6 +143,7 @@ def main(
     """Generate dynamic insert MCP tools based on a given PostgreSQL schema."""
     sys.exit(asyncio.run(runner(
         overwrite,
+        readonly,
         select_joined,
         ignore_insert_column,
         ignore_select_column,

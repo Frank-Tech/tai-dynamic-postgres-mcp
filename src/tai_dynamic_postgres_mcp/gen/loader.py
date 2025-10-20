@@ -7,8 +7,8 @@ from tai_dynamic_postgres_mcp import tools
 from tai_dynamic_postgres_mcp.gen.builders.base_gen import BaseGen, TOOLS_SUFFIX
 from tai_dynamic_postgres_mcp.gen.builders.delete_gen import DeleteGen
 from tai_dynamic_postgres_mcp.gen.builders.insert_gen import InsertGen
-from tai_dynamic_postgres_mcp.gen.builders.select_joined_gen import SelectJoinedGen
 from tai_dynamic_postgres_mcp.gen.builders.select_gen import SelectGen
+from tai_dynamic_postgres_mcp.gen.builders.select_joined_gen import SelectJoinedGen
 from tai_dynamic_postgres_mcp.gen.builders.update_gen import UpdateGen
 from tai_dynamic_postgres_mcp.gen.schema.introspect import generate_schema_ddl
 
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 async def load_dynamic_tools(
         overwrite: bool = True,
+        readonly: bool = False,
         ignore_insert_columns: Optional[List[str]] = None,
         ignore_select_columns: Optional[List[str]] = None,
         ignore_update_columns: Optional[List[str]] = None,
@@ -25,11 +26,15 @@ async def load_dynamic_tools(
 ):
     gen_list: List[BaseGen] = [
         SelectJoinedGen(select_joined, ignore_select_joined_columns),
-        InsertGen(ignore_insert_columns),
         SelectGen(ignore_select_columns),
-        UpdateGen(ignore_update_columns),
-        DeleteGen(),
     ]
+
+    if not readonly:
+        gen_list += [
+            InsertGen(ignore_insert_columns),
+            UpdateGen(ignore_update_columns),
+            DeleteGen(),
+        ]
 
     to_generate = gen_list if overwrite else [gen for gen in gen_list if not gen.is_exists]
     if to_generate:
