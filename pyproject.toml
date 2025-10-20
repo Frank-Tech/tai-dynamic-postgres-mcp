@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "tai-dynamic-postgres-mcp"
 version = "0.4.2"
 description = "dynamic PostgreSQL DML MCP Server"
-authors = [{ name = "Your Name", email = "daniel@cain-technologies.com" }]
+authors = [{ name = "Tai42", email = "daniel@cain-technologies.com" }]
 readme = "readme.md"
 requires-python = ">=3.10"
 dependencies = [
