@@ -22,6 +22,13 @@ class TextLoader(Loader):
 async def register_temporal_types_as_strings(conn):
     for type_name in TEMPORAL_TYPES:
         tinfo = await TypeInfo.fetch(conn, type_name)
+        if tinfo:
+            conn.adapters.register_loader(tinfo.oid, TextLoader)
+
+
+async def register_uuid_as_string(conn):
+    tinfo = await TypeInfo.fetch(conn, 'uuid')
+    if tinfo:
         conn.adapters.register_loader(tinfo.oid, TextLoader)
 
 
@@ -51,4 +58,5 @@ def register_json_dumpers(conn):
 async def register_types_loaders(conn):
     await register_temporal_types_as_strings(conn)
     await register_vector_as_list(conn)
+    await register_uuid_as_string(conn)
     register_json_dumpers(conn)
