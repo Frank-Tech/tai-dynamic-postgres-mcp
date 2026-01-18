@@ -52,8 +52,8 @@ SQL_TO_PYTHON = {
     'time with time zone': 'str',
 
     # JSON types
-    'json': 'dict',
-    'jsonb': 'dict',
+    'json': 'Union[dict, list]',
+    'jsonb': 'Union[dict, list]',
 
     # Arrays and special
     'bytea': 'bytes',
@@ -79,8 +79,8 @@ SQL_TO_PYTHON = {
     'numeric[]': 'List[float]',
     'real[]': 'List[float]',
     'double precision[]': 'List[float]',
-    'json[]': 'List[dict]',
-    'jsonb[]': 'List[dict]',
+    'json[]': 'List[Union[dict, list]]',
+    'jsonb[]': 'List[Union[dict, list]]',
     'vector[]': 'List[List[float]]',
 
     # Catch-all fallback

@@ -7,7 +7,7 @@ _FUNC_PREFIX = "select_joined"
 
 _IMPORTS = """# This file is auto-generated. Do not edit manually.
 
-from typing import Optional, List
+from typing import Optional, List, Union
 from pydantic import BaseModel
 from tai_dynamic_postgres_mcp.core.app import mcp_app
 from tai_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl

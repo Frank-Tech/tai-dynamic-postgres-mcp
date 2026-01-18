@@ -3,6 +3,7 @@ from typing import List
 
 from psycopg.adapt import Loader
 from psycopg.types import TypeInfo
+from psycopg.types.json import JsonDumper
 
 TEMPORAL_TYPES = [
     'date',
@@ -42,6 +43,12 @@ async def register_vector_as_list(conn):
         conn.adapters.register_loader(tinfo.oid, VectorLoader)
 
 
+def register_json_dumpers(conn):
+    conn.adapters.register_dumper(dict, JsonDumper)
+    conn.adapters.register_dumper(list, JsonDumper)
+
+
 async def register_types_loaders(conn):
     await register_temporal_types_as_strings(conn)
     await register_vector_as_list(conn)
+    register_json_dumpers(conn)
