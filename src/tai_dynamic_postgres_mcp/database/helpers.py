@@ -54,7 +54,7 @@ async def register_vector_as_list(conn):
 class HybridListDumper(ListDumper):
     def dump(self, obj):
         if obj and isinstance(obj[0], dict):
-            return JsonDumper(self.cls).dump(obj)
+            return JsonDumper(list).dump(obj)
         return super().dump(obj)
 
 
