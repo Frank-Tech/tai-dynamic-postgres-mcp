@@ -1,7 +1,7 @@
 import warnings
 from typing import List
 
-from psycopg.adapt import Loader
+from psycopg.adapt import Loader, Dumper
 from psycopg.types import TypeInfo
 from psycopg.types.array import ListDumper
 from psycopg.types.json import JsonDumper
@@ -51,11 +51,17 @@ async def register_vector_as_list(conn):
         conn.adapters.register_loader(tinfo.oid, VectorLoader)
 
 
-class HybridListDumper(ListDumper):
+class HybridListDumper(Dumper):
+    def __init__(self, cls, context=None):
+        super().__init__(cls, context)
+        self._json_dumper = JsonDumper(cls, context)
+        self._list_dumper = ListDumper(cls, context)
+
     def dump(self, obj):
         if obj and isinstance(obj[0], dict):
-            return JsonDumper(list).dump(obj)
-        return super().dump(obj)
+            return self._json_dumper.dump(obj)
+
+        return self._list_dumper.dump(obj)
 
 
 def register_json_dumpers(conn):
