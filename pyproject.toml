@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tai-dynamic-postgres-mcp"
-version = "0.4.4"
+version = "0.4.5"
 description = "dynamic PostgreSQL DML MCP Server"
 authors = [{ name = "Tai42", email = "daniel@cain-technologies.com" }]
 readme = "readme.md"
